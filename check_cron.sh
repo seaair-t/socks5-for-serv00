@@ -4,10 +4,12 @@ USER=$(whoami)
 USER_LOWER="${USER,,}"
 WORKDIR="/home/${USER}/nz/nezha-agent"
 WORKDIR1="/home/${USER}/.hysteria"
+WORKDIR2="/home/${USER}/.nezha-dashboard"
 FILE_PATH="/home/${USER}/.s5"
 HYSTERIA_CONFIG="$WORKDIR1/config.yaml"  # Hysteria 配置文件路径
 CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
 CRON_NEZHA="nohup ${WORKDIR}/start.sh >/dev/null 2>&1 &"
+CRON_NEZHA_DASH="nohup ${WORKDIR2}/start.sh >/dev/null 2>&1 &"
 CRON_HYSTERIA="nohup /home/${USER}/.hysteria/web server $HYSTERIA_CONFIG >/dev/null 2>&1 &"  # Hysteria 启动命令
 PM2_PATH="/home/${USER}/.npm-global/lib/node_modules/pm2/bin/pm2"
 CRON_JOB="*/12 * * * * $PM2_PATH resurrect >> /home/$USER/pm2_resurrect.log 2>&1"
@@ -38,6 +40,11 @@ else
     (crontab -l | grep -F "@reboot pkill -kill -u $USER && ${CRON_S5} && ${CRON_HYSTERIA}") || (crontab -l; echo "@reboot pkill -kill -u $USER && ${CRON_S5} && ${CRON_HYSTERIA}") | crontab -
     (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
     (crontab -l | grep -F "* * pgrep -x \"hysteria-server\" > /dev/null || ${CRON_HYSTERIA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"hysteria-server\" > /dev/null || ${CRON_HYSTERIA}") | crontab -
+  elif [ -e "${WORKDIR}/start.sh" ] && [ -e "${WORKDIR2}/start.sh" ]; then
+    echo "添加 nezha 和nezha dash的 crontab 重启任务"
+    (crontab -l | grep -F "@reboot pkill -kill -u $USER && ${CRON_NEZHA} && ${CRON_NEZHA_DASH}") || (crontab -l; echo "@reboot pkill -kill -u $USER && ${CRON_NEZHA} && ${CRON_NEZHA_DASH}") | crontab -
+    (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
+    (crontab -l | grep -F "* * pgrep -x \"nezha-dash\" > /dev/null || ${CRON_NEZHA_DASH}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-dash\" > /dev/null || ${CRON_NEZHA_DASH}") | crontab -
   elif [ -e "${WORKDIR}/start.sh" ]; then
     echo "添加 nezha 的 crontab 重启任务"
     (crontab -l | grep -F "@reboot pkill -kill -u $USER && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $USER && ${CRON_NEZHA}") | crontab -
