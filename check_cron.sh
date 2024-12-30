@@ -2,9 +2,9 @@
 
 USER=$(whoami)
 USER_LOWER="${USER,,}"
-WORKDIR="/home/${USER}/nz/nezha-agent"
+WORKDIR="/home/${USER}/nz/nezha-agent1"
 WORKDIR1="/home/${USER}/.hysteria"
-WORKDIR2="/home/${USER}/.nezha-dashboard"
+WORKDIR2="/home/${USER}/.nezha-dashboard1"
 FILE_PATH="/home/${USER}/.s5"
 HYSTERIA_CONFIG="$WORKDIR1/config.yaml"  # Hysteria 配置文件路径
 CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
