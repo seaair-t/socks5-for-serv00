@@ -17,7 +17,7 @@ REBOOT_COMMAND="@reboot pkill -kill -u $USER && $PM2_PATH resurrect >> /home/$US
 
 echo "检查并添加 crontab 任务"
 
-(crontab -l; echo "*/12 * * * * nohup /home/$USER/plan.sh >/dev/null 2>&1 &") | crontab -
+(crontab -l | grep -F "plan.sh" > /dev/null )|| (crontab -l; echo "*/12 * * * * nohup /home/$USER/plan.sh >/dev/null 2>&1 &") | crontab -
 
 # 添加 pm2 保活任务
 if command -v pm2 > /dev/null 2>&1 && [[ $(which pm2) == "/home/${USER_LOWER}/.npm-global/bin/pm2" ]]; then
